@@ -16,6 +16,7 @@ GENDERED_WORDS = {
         "ninja", "rockstar", "guru", "wizard", "hacker",
         "ambitieux", "combatif", "dominant", "compétitif",
         "indépendant", "confiant", "assertif", "agressif"
+        "curieux", "autonome", "rigoureux", "proactif", "dynamique"
     ],
     "feminins": [
         "collaboratif", "empathique", "doux", "attentionné",
@@ -31,6 +32,9 @@ DISCRIMINATORY_PATTERNS = [
     r"présentable",
     r"photos?",
     r"disponible\s*immédiatement",
+    r"grande[s]?\s*école[s]?",          # critère socio-économique
+    r"obligatoire",                       # formulation excluante
+    r"\d+\s*à\s*\d+\s*ans?\s*d.expérience",  # tranches d'expérience
 ]
 
 INCLUSIVE_ALTERNATIVES = {
@@ -43,6 +47,13 @@ INCLUSIVE_ALTERNATIVES = {
     "combatif": "déterminé",
     "dominant": "leadership",
     "jeune": "junior",
+    "autonome": "capable de travailler en autonomie",
+    "rigoureux": "méthodique",
+    "curieux": "avec une appétence pour l'apprentissage",
+    "proactif": "force de proposition",
+    "dynamique": "motivé",
+    "obligatoire": "⚠️ Reformuler en critère souhaité plutôt qu'obligatoire",
+    "grande école": "diplômé(e) Bac+5 (université, école d'ingénieurs...)",
 }
 
 
