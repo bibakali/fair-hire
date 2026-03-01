@@ -22,3 +22,4 @@ mlruns/
 
 # Docker
 *.log
+mlflow.db
