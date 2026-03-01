@@ -142,9 +142,9 @@ def run_pipeline(cv_path: str, job_path: str) -> FairHireResult:
         FairHireResult avec tous les résultats
     """
     result = FairHireResult(
-        cv_filename=os.path.basename(cv_path),
-        job_filename=os.path.basename(job_path)
-    )
+    cv_filename=os.path.basename(cv_path).replace(".pdf", " (CV)"),
+    job_filename="Offre collée" if job_path.endswith(".txt") else os.path.basename(job_path)
+)
 
     try:
         start_time = time.time()
@@ -179,8 +179,9 @@ def run_pipeline(cv_path: str, job_path: str) -> FairHireResult:
         job_context = tool_retrieve_context(
             "compétences requises poste missions", "job_current"
         )
-        result.cv_summary = tool_generate_summary(cv_context, "cv")
-        result.job_summary = tool_generate_summary(job_context, "job")
+        # On skipe les résumés séparés pour économiser les appels Mistral
+        result.cv_summary = cv_context  # contexte brut
+        result.job_summary = job_context  # contexte brut
 
         # --- Étape 5 : Matching ---
         print("\n" + "="*50)

@@ -10,38 +10,46 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 
 def load_pdf(file_path: str) -> str:
-    """
-    Lit un fichier PDF et retourne son contenu texte brut.
-    
-    Args:
-        file_path: Chemin vers le fichier PDF
-        
-    Returns:
-        Texte extrait du PDF
-    """
     path = Path(file_path)
-    
+
     if path.suffix.lower() != ".pdf":
         raise ValueError(f"Le fichier doit être un PDF : {file_path}")
-    
+
     if not path.exists():
         raise FileNotFoundError(f"Fichier introuvable : {file_path}")
-    
-    doc = fitz.open(file_path)
+
     text = ""
-    
-    for page_num, page in enumerate(doc):
-        text += f"\n--- Page {page_num + 1} ---\n"
-        text += page.get_text()
-    
-    doc.close()
-    
+    doc = fitz.open(file_path)
+
+    try:
+        for page_num, page in enumerate(doc):
+            text += f"\n--- Page {page_num + 1} ---\n"
+            text += page.get_text()
+        n_pages = len(doc)
+    finally:
+        doc.close()
+
     if not text.strip():
         raise ValueError(f"Aucun texte extrait du PDF : {file_path}")
-    
-    print(f"✅ PDF chargé : {path.name} ({len(doc)} pages, {len(text)} caractères)")
+
+    print(f"✅ PDF chargé : {path.name} ({n_pages} pages, {len(text)} caractères)")
     return text
 
+def load_txt(file_path: str) -> str:
+    """Lit un fichier texte brut."""
+    path = Path(file_path)
+
+    if not path.exists():
+        raise FileNotFoundError(f"Fichier introuvable : {file_path}")
+
+    with open(file_path, "r", encoding="utf-8") as f:
+        text = f.read()
+
+    if not text.strip():
+        raise ValueError(f"Fichier texte vide : {file_path}")
+
+    print(f"✅ Texte chargé : {path.name} ({len(text)} caractères)")
+    return text
 
 def split_text(text: str, chunk_size: int = 512, chunk_overlap: int = 50) -> list[str]:
     """
@@ -68,18 +76,17 @@ def split_text(text: str, chunk_size: int = 512, chunk_overlap: int = 50) -> lis
 
 def load_and_split(file_path: str, chunk_size: int = 512, chunk_overlap: int = 50) -> list[str]:
     """
-    Pipeline complet : charge un PDF et le découpe.
-    Fonction principale à appeler depuis les autres modules.
-    
-    Args:
-        file_path: Chemin vers le fichier PDF
-        chunk_size: Taille des morceaux
-        chunk_overlap: Chevauchement
-        
-    Returns:
-        Liste de morceaux de texte prêts à être vectorisés
+    Pipeline complet : charge un PDF ou TXT et le découpe.
     """
-    text = load_pdf(file_path)
+    path = Path(file_path)
+
+    if path.suffix.lower() == ".pdf":
+        text = load_pdf(file_path)
+    elif path.suffix.lower() == ".txt":
+        text = load_txt(file_path)
+    else:
+        raise ValueError(f"Format non supporté : {path.suffix}. Utilisez PDF ou TXT.")
+
     chunks = split_text(text, chunk_size, chunk_overlap)
     return chunks
 

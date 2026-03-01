@@ -83,7 +83,7 @@ def generate(question: str, context: str, mode: str = "general") -> str:
                     "top_p": 0.9,
                 }
             },
-            timeout=120
+            timeout=600
         )
         response.raise_for_status()
         return response.json()["response"].strip()
@@ -100,48 +100,66 @@ def generate(question: str, context: str, mode: str = "general") -> str:
 
 
 def generate_matching_report(cv_context: str, job_context: str) -> str:
-    """
-    Génère un rapport de matching CV / Offre d'emploi.
+        """
+        Génère un rapport de matching avec streaming pour éviter le timeout.
+        """
+        full_prompt = f"""<s>[INST] Tu es un expert RH français. Analyse en français la correspondance entre ce candidat et ce poste.
+    Sois concis et structuré.
 
-    Args:
-        cv_context: Passages extraits du CV
-        job_context: Passages extraits de l'offre d'emploi
+    ### CV :
+    {cv_context[:1000]}
 
-    Returns:
-        Rapport structuré de matching
-    """
-    question = "Analyse la correspondance entre ce candidat et ce poste."
-    context = f"### CV DU CANDIDAT :\n{cv_context}\n\n### OFFRE D'EMPLOI :\n{job_context}"
+    ### OFFRE :
+    {job_context[:1000]}
 
-    prompt = build_prompt(question, context, mode="matching")
+    Réponds UNIQUEMENT avec ce format :
 
-    full_prompt = f"""{prompt}
+    ## Score : X/10
 
-Structure ta réponse ainsi :
-1. **Score de matching estimé** (sur 10)
-2. **Points forts du candidat** pour ce poste
-3. **Points manquants ou à développer**
-4. **Recommandation finale**"""
+    ## Points forts
+    - point 1
+    - point 2
+    - point 3
 
-    try:
-        response = requests.post(
-            f"{OLLAMA_HOST}/api/generate",
-            json={
-                "model": OLLAMA_MODEL,
-                "prompt": full_prompt,
-                "stream": False,
-                "options": {"temperature": 0.1}
-            },
-            timeout=120
-        )
-        response.raise_for_status()
-        return response.json()["response"].strip()
+    ## Points à développer
+    - point 1
+    - point 2
 
-    except requests.exceptions.ConnectionError:
-        raise ConnectionError(
-            f"Impossible de contacter Ollama. Lance : ollama serve"
-        )
+    ## Recommandation
+    Une phrase. [/INST]"""
 
+        try:
+            response = requests.post(
+                f"{OLLAMA_HOST}/api/generate",
+                json={
+                    "model": "mistral",
+                    "prompt": full_prompt,
+                    "stream": True,
+                    "options": {
+                        "temperature": 0.1,
+                        "num_predict": 500
+                    }
+                },
+                stream=True,
+                timeout=600
+            )
+            response.raise_for_status()
+
+            result = ""
+            for line in response.iter_lines():
+                if line:
+                    import json
+                    data = json.loads(line)
+                    result += data.get("response", "")
+                    if data.get("done", False):
+                        break
+
+            return result.strip()
+
+        except requests.exceptions.ConnectionError:
+            raise ConnectionError("Impossible de contacter Ollama. Lance : ollama serve")
+        except requests.exceptions.Timeout:
+            raise TimeoutError("Mistral met trop de temps à répondre. Réessaie.")
 
 # Test rapide si on lance ce fichier directement
 if __name__ == "__main__":

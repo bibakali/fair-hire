@@ -25,11 +25,137 @@ st.set_page_config(
 
 st.markdown("""
 <style>
-    .main-title { font-size: 2.5rem; font-weight: 700; color: #1f4e79; }
-    .subtitle { font-size: 1.1rem; color: #555; margin-bottom: 2rem; }
-    .score-good { color: #27ae60; font-weight: bold; }
-    .score-warning { color: #f39c12; font-weight: bold; }
-    .score-bad { color: #e74c3c; font-weight: bold; }
+    @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap');
+
+    html, body, [class*="css"] { font-family: 'DM Sans', sans-serif; }
+
+    .stApp {
+        background: linear-gradient(135deg, #0a0a0f 0%, #0d0d1a 50%, #0a0f1a 100%);
+        min-height: 100vh;
+    }
+
+    [data-testid="stSidebar"] {
+        background: linear-gradient(180deg, #0d0d1a 0%, #111128 100%) !important;
+        border-right: 1px solid rgba(139, 92, 246, 0.2);
+    }
+    [data-testid="stSidebar"] * { color: #e2e8f0 !important; }
+    [data-testid="stSidebar"] .stRadio label {
+        background: rgba(139, 92, 246, 0.08);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        border-radius: 10px;
+        padding: 10px 14px;
+        margin: 4px 0;
+        transition: all 0.2s ease;
+        cursor: pointer;
+        display: block;
+    }
+    [data-testid="stSidebar"] .stRadio label:hover {
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.5);
+        transform: translateX(4px);
+    }
+
+    h1, h2, h3 { font-family: 'Syne', sans-serif !important; color: #e2e8f0 !important; }
+    p, li, span, div { color: #cbd5e1; }
+
+    .stButton > button {
+        background: linear-gradient(135deg, #7c3aed, #2563eb) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 12px !important;
+        padding: 0.6rem 2rem !important;
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        letter-spacing: 0.5px !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4) !important;
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 8px 30px rgba(124, 58, 237, 0.6) !important;
+    }
+
+    [data-testid="stFileUploader"] {
+        background: rgba(139, 92, 246, 0.05) !important;
+        border: 2px dashed rgba(139, 92, 246, 0.3) !important;
+        border-radius: 16px !important;
+        padding: 20px !important;
+        transition: all 0.3s ease !important;
+    }
+    [data-testid="stFileUploader"]:hover {
+        border-color: rgba(139, 92, 246, 0.6) !important;
+        background: rgba(139, 92, 246, 0.08) !important;
+    }
+
+    .stTextArea textarea {
+        background: rgba(15, 15, 30, 0.8) !important;
+        border: 1px solid rgba(139, 92, 246, 0.3) !important;
+        border-radius: 12px !important;
+        color: #e2e8f0 !important;
+        font-family: 'DM Sans', sans-serif !important;
+    }
+    .stTextArea textarea:focus {
+        border-color: rgba(139, 92, 246, 0.7) !important;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.15) !important;
+    }
+
+    .stTabs [data-baseweb="tab-list"] {
+        background: rgba(139, 92, 246, 0.05) !important;
+        border-radius: 12px !important;
+        padding: 4px !important;
+        gap: 4px !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        background: transparent !important;
+        color: #94a3b8 !important;
+        border-radius: 10px !important;
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 600 !important;
+        transition: all 0.2s ease !important;
+    }
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #7c3aed, #2563eb) !important;
+        color: white !important;
+    }
+
+    [data-testid="stMetric"] {
+        background: rgba(139, 92, 246, 0.08) !important;
+        border: 1px solid rgba(139, 92, 246, 0.2) !important;
+        border-radius: 16px !important;
+        padding: 20px !important;
+    }
+    [data-testid="stMetricValue"] {
+        color: #a78bfa !important;
+        font-family: 'Syne', sans-serif !important;
+        font-weight: 700 !important;
+    }
+
+    .stAlert {
+        background: rgba(56, 189, 248, 0.08) !important;
+        border: 1px solid rgba(56, 189, 248, 0.3) !important;
+        border-radius: 12px !important;
+        color: #e2e8f0 !important;
+    }
+
+    hr { border-color: rgba(139, 92, 246, 0.15) !important; }
+
+    .stProgress > div > div {
+        background: linear-gradient(90deg, #7c3aed, #38bdf8) !important;
+        border-radius: 10px !important;
+    }
+    .stProgress > div {
+        background: rgba(139, 92, 246, 0.1) !important;
+        border-radius: 10px !important;
+    }
+
+    .score-good { color: #34d399 !important; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; }
+    .score-warning { color: #fbbf24 !important; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; }
+    .score-bad { color: #f87171 !important; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0f; }
+    ::-webkit-scrollbar-thumb { background: linear-gradient(#7c3aed, #2563eb); border-radius: 3px; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -37,12 +163,33 @@ st.markdown("""
 # Header
 # ---------------------------------------------------------------
 
-st.markdown('<p class="main-title">⚖️ Fair Hire</p>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="subtitle">Assistant RH basé sur l\'IA — '
-    'Détection de biais & Matching CV/Offre d\'emploi</p>',
-    unsafe_allow_html=True
-)
+st.markdown("""
+<div style="padding: 2rem 0 1rem 0;">
+    <div style="
+        font-family: 'Syne', sans-serif;
+        font-size: 4rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #a78bfa 0%, #38bdf8 60%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -3px;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    ">⚖️ Fair Hire</div>
+    <div style="
+        font-family: 'DM Sans', sans-serif;
+        font-size: 1.1rem;
+        color: #94a3b8;
+        font-weight: 300;
+        letter-spacing: 1px;
+        border-left: 3px solid #7c3aed;
+        padding-left: 12px;
+        margin-top: 8px;
+    ">Assistant RH basé sur l'IA — Détection de biais & Matching CV/Offre d'emploi</div>
+</div>
+""", unsafe_allow_html=True)
+
 st.divider()
 
 # ---------------------------------------------------------------
@@ -60,13 +207,43 @@ with st.sidebar:
     st.markdown("### 📖 Guide rapide")
     st.markdown("""
     **Analyse de biais** : Détecte les formulations discriminantes.
-    
+
     **Matching CV/Offre** : Compare un CV avec une offre.
-    
+
     **Pipeline complet** : Les deux analyses en une fois.
     """)
     st.divider()
     st.markdown("Built with LangChain · ChromaDB · Mistral")
+
+# ---------------------------------------------------------------
+# Utilitaire : sauvegarde fichier temporaire
+# ---------------------------------------------------------------
+
+def save_temp_file(uploaded_file, suffix=".pdf"):
+    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=suffix)
+    tmp.write(uploaded_file.read())
+    tmp.flush()
+    tmp.close()
+    return tmp.name
+
+
+def save_temp_text(text, suffix=".txt"):
+    tmp = tempfile.NamedTemporaryFile(
+        delete=False, suffix=suffix, mode="w", encoding="utf-8"
+    )
+    tmp.write(text)
+    tmp.flush()
+    tmp.close()
+    return tmp.name
+
+
+def cleanup(*paths):
+    for p in paths:
+        try:
+            if p and os.path.exists(p):
+                os.unlink(p)
+        except Exception:
+            pass
 
 # ---------------------------------------------------------------
 # Mode 1 : Analyse de biais
@@ -103,23 +280,19 @@ if "Analyse de biais" in mode:
                 placeholder="Colle ici le texte copié depuis LinkedIn, Indeed..."
             )
 
-        can_analyze = job_file is not None or (
+        can_analyze = (job_file is not None) or (
             job_text_input is not None and len(job_text_input.strip()) > 0
         )
 
         if can_analyze:
             if st.button("🚀 Analyser les biais", type="primary"):
                 with st.spinner("Analyse en cours..."):
+                    tmp_path = None
                     try:
                         if job_file:
-                            with tempfile.NamedTemporaryFile(
-                                delete=False, suffix=".pdf"
-                            ) as tmp:
-                                tmp.write(job_file.read())
-                                tmp_path = tmp.name
+                            tmp_path = save_temp_file(job_file)
                             chunks = load_and_split(tmp_path)
                             job_text = " ".join(chunks)
-                            os.unlink(tmp_path)
                         else:
                             job_text = job_text_input
 
@@ -129,6 +302,8 @@ if "Analyse de biais" in mode:
 
                     except Exception as e:
                         st.error(f"Erreur : {e}")
+                    finally:
+                        cleanup(tmp_path)
 
     with col2:
         st.subheader("📊 Résultats")
@@ -165,7 +340,6 @@ elif "Matching" in mode:
             horizontal=True,
             key="match_job_mode"
         )
-
         job_file = None
         job_text_direct = None
 
@@ -184,34 +358,22 @@ elif "Matching" in mode:
             )
 
     has_cv = cv_file is not None
-    has_job = job_file is not None or (
+    has_job = (job_file is not None) or (
         job_text_direct is not None and len(job_text_direct.strip()) > 0
     )
 
     if has_cv and has_job:
         if st.button("🚀 Lancer le matching", type="primary"):
             with st.spinner("Analyse en cours... (peut prendre 1-2 min)"):
+                cv_path = None
+                job_path = None
                 try:
-                    # CV — toujours PDF
-                    with tempfile.NamedTemporaryFile(
-                        delete=False, suffix=".pdf"
-                    ) as tmp_cv:
-                        tmp_cv.write(cv_file.read())
-                        cv_path = tmp_cv.name
+                    cv_path = save_temp_file(cv_file)
 
-                    # Offre — PDF ou texte
                     if job_file:
-                        with tempfile.NamedTemporaryFile(
-                            delete=False, suffix=".pdf"
-                        ) as tmp_job:
-                            tmp_job.write(job_file.read())
-                            job_path = tmp_job.name
+                        job_path = save_temp_file(job_file)
                     else:
-                        with tempfile.NamedTemporaryFile(
-                            delete=False, suffix=".txt", mode="w", encoding="utf-8"
-                        ) as tmp_job:
-                            tmp_job.write(job_text_direct)
-                            job_path = tmp_job.name
+                        job_path = save_temp_text(job_text_direct)
 
                     result = run_pipeline(cv_path, job_path)
 
@@ -234,10 +396,7 @@ elif "Matching" in mode:
                 except Exception as e:
                     st.error(f"Erreur : {e}")
                 finally:
-                    if os.path.exists(cv_path):
-                        os.unlink(cv_path)
-                    if os.path.exists(job_path):
-                        os.unlink(job_path)
+                    cleanup(cv_path, job_path)
 
 # ---------------------------------------------------------------
 # Mode 3 : Pipeline complet
@@ -263,7 +422,6 @@ elif "Pipeline complet" in mode:
             horizontal=True,
             key="full_job_mode"
         )
-
         full_job_file = None
         full_job_text = None
 
@@ -282,45 +440,39 @@ elif "Pipeline complet" in mode:
             )
 
     has_cv = cv_file is not None
-    has_job = full_job_file is not None or (
+    has_job = (full_job_file is not None) or (
         full_job_text is not None and len(full_job_text.strip()) > 0
     )
 
     if has_cv and has_job:
         if st.button("🚀 Lancer l'analyse complète", type="primary"):
             with st.spinner("Pipeline en cours... (2-3 min)"):
+                cv_path = None
+                job_path = None
                 try:
-                    with tempfile.NamedTemporaryFile(
-                        delete=False, suffix=".pdf"
-                    ) as tmp_cv:
-                        tmp_cv.write(cv_file.read())
-                        cv_path = tmp_cv.name
+                    cv_path = save_temp_file(cv_file)
 
                     if full_job_file:
-                        with tempfile.NamedTemporaryFile(
-                            delete=False, suffix=".pdf"
-                        ) as tmp_job:
-                            tmp_job.write(full_job_file.read())
-                            job_path = tmp_job.name
+                        job_path = save_temp_file(full_job_file)
                     else:
-                        with tempfile.NamedTemporaryFile(
-                            delete=False, suffix=".txt", mode="w", encoding="utf-8"
-                        ) as tmp_job:
-                            tmp_job.write(full_job_text)
-                            job_path = tmp_job.name
+                        job_path = save_temp_text(full_job_text)
 
                     result = run_pipeline(cv_path, job_path)
 
                     if result.status == "success":
                         st.success("✅ Pipeline terminé !")
                         m1, m2, m3 = st.columns(3)
-                        m1.metric("CV", result.cv_filename)
-                        m2.metric("Offre", result.job_filename)
-                        m3.metric(
-                            "Score de biais",
-                            f"{result.bias_score:.4f}",
-                            delta="Neutre" if result.bias_score == 0 else "Biais détectés"
-                        )
+                        m1.metric("📄 CV analysé", "✅ Chargé")
+                        m2.metric("📋 Offre analysée", "✅ Chargée")
+
+                        if result.bias_score == 0:
+                            bias_label = "✅ Neutre"
+                        elif result.bias_score < 0.05:
+                            bias_label = "⚠️ Biais faibles"
+                        else:
+                            bias_label = "🚨 Biais détectés"
+
+                        m3.metric("⚖️ Score de biais", f"{result.bias_score:.4f}", delta=bias_label)
                         st.divider()
                         tab1, tab2, tab3 = st.tabs(["🎯 Matching", "⚖️ Biais", "📝 Résumés"])
                         with tab1:
@@ -339,7 +491,4 @@ elif "Pipeline complet" in mode:
                 except Exception as e:
                     st.error(f"Erreur : {e}")
                 finally:
-                    if os.path.exists(cv_path):
-                        os.unlink(cv_path)
-                    if os.path.exists(job_path):
-                        os.unlink(job_path)
+                    cleanup(cv_path, job_path)
