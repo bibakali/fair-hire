@@ -1,3 +1,13 @@
+---
+title: Fair Hire
+emoji: ⚖️
+colorFrom: purple
+colorTo: blue
+sdk: streamlit
+sdk_version: 1.32.0
+app_file: app/streamlit_app.py
+pinned: false
+---
 # ⚖️ Fair Hire — Assistant RH Inclusif basé sur l'IA
 
 > Détection de biais dans les offres d'emploi et matching intelligent CV/Poste  
