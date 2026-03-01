@@ -13,6 +13,9 @@ from src.retriever import retrieve, format_context
 from src.generator import generate, generate_matching_report
 from src.bias_detector import analyze, format_report
 
+import time
+from src.mlflow_tracker import log_pipeline_run, log_bias_run
+
 load_dotenv()
 
 
@@ -144,6 +147,7 @@ def run_pipeline(cv_path: str, job_path: str) -> FairHireResult:
     )
 
     try:
+        start_time = time.time()
         # --- Étape 1 : Chargement des documents ---
         print("\n" + "="*50)
         print("ÉTAPE 1 : Chargement des documents")
@@ -184,6 +188,15 @@ def run_pipeline(cv_path: str, job_path: str) -> FairHireResult:
         print("="*50)
         result.matching_report = generate_matching_report(cv_context, job_context)
 
+        # Log MLflow
+        end_time = time.time()
+        log_pipeline_run(
+            cv_file=os.path.basename(cv_path),
+            job_file=os.path.basename(job_path),
+            bias_score=result.bias_score,
+            pipeline_status="success",
+            duration_seconds=round(end_time - start_time, 2)
+        )
         result.status = "success"
         print("\n✅ Pipeline terminé avec succès !")
 
