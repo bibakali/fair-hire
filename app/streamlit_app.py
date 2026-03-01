@@ -206,17 +206,23 @@ with st.sidebar:
     st.divider()
     st.markdown("### 📖 Guide rapide")
     st.markdown("""
-    **Analyse de biais** : Détecte les formulations discriminantes.
+    **🔍 Analyse de biais**
+    Détecte les formulations discriminantes dans une offre.
+    *Résultat en 2 secondes.*
 
-    **Matching CV/Offre** : Compare un CV avec une offre.
+    **🎯 Matching CV/Offre**
+    Rapport de matching rapide entre un CV et une offre.
+    *Résultat en 5 secondes.*
 
-    **Pipeline complet** : Les deux analyses en une fois.
+    **📊 Pipeline complet**
+    Matching + biais + résumés détaillés.
+    *Analyse approfondie en 30 secondes.*
     """)
     st.divider()
     st.markdown("Built with LangChain · ChromaDB · Mistral")
 
 # ---------------------------------------------------------------
-# Utilitaire : sauvegarde fichier temporaire
+# Utilitaires
 # ---------------------------------------------------------------
 
 def save_temp_file(uploaded_file, suffix=".pdf"):
@@ -251,6 +257,8 @@ def cleanup(*paths):
 
 if "Analyse de biais" in mode:
     st.header("🔍 Analyse de biais dans une offre d'emploi")
+    st.info("Détecte automatiquement les formulations genrées, discriminatoires ou excluantes. Résultat instantané.")
+
     col1, col2 = st.columns([1, 1])
 
     with col1:
@@ -319,11 +327,13 @@ if "Analyse de biais" in mode:
             st.code(st.session_state["bias_report"])
 
 # ---------------------------------------------------------------
-# Mode 2 : Matching CV / Offre
+# Mode 2 : Matching rapide CV / Offre
 # ---------------------------------------------------------------
 
 elif "Matching" in mode:
     st.header("🎯 Matching CV / Offre d'emploi")
+    st.info("Mode rapide — rapport de matching uniquement, sans analyse de biais. Résultat en 5 secondes.")
+
     col1, col2 = st.columns([1, 1])
 
     with col1:
@@ -364,7 +374,7 @@ elif "Matching" in mode:
 
     if has_cv and has_job:
         if st.button("🚀 Lancer le matching", type="primary"):
-            with st.spinner("Analyse en cours... (peut prendre 1-2 min)"):
+            with st.spinner("Analyse en cours..."):
                 cv_path = None
                 job_path = None
                 try:
@@ -378,18 +388,9 @@ elif "Matching" in mode:
                     result = run_pipeline(cv_path, job_path)
 
                     if result.status == "success":
-                        st.success("✅ Analyse terminée !")
-                        tab1, tab2, tab3 = st.tabs(["🎯 Matching", "📝 Résumés", "⚖️ Biais"])
-                        with tab1:
-                            st.markdown(result.matching_report)
-                        with tab2:
-                            st.markdown("**CV**")
-                            st.markdown(result.cv_summary)
-                            st.divider()
-                            st.markdown("**Offre**")
-                            st.markdown(result.job_summary)
-                        with tab3:
-                            st.code(result.bias_report)
+                        st.success("✅ Matching terminé !")
+                        st.divider()
+                        st.markdown(result.matching_report)
                     else:
                         st.error(f"Erreur : {result.error}")
 
@@ -404,7 +405,7 @@ elif "Matching" in mode:
 
 elif "Pipeline complet" in mode:
     st.header("📊 Pipeline complet")
-    st.info("Ce mode combine l'analyse de biais ET le matching en une seule analyse.")
+    st.info("Analyse approfondie — matching + détection de biais + résumés détaillés. ~30 secondes.")
 
     col1, col2 = st.columns([1, 1])
 
@@ -446,7 +447,7 @@ elif "Pipeline complet" in mode:
 
     if has_cv and has_job:
         if st.button("🚀 Lancer l'analyse complète", type="primary"):
-            with st.spinner("Pipeline en cours... (2-3 min)"):
+            with st.spinner("Pipeline en cours... (~30 secondes)"):
                 cv_path = None
                 job_path = None
                 try:
@@ -461,6 +462,7 @@ elif "Pipeline complet" in mode:
 
                     if result.status == "success":
                         st.success("✅ Pipeline terminé !")
+
                         m1, m2, m3 = st.columns(3)
                         m1.metric("📄 CV analysé", "✅ Chargé")
                         m2.metric("📋 Offre analysée", "✅ Chargée")
@@ -473,18 +475,24 @@ elif "Pipeline complet" in mode:
                             bias_label = "🚨 Biais détectés"
 
                         m3.metric("⚖️ Score de biais", f"{result.bias_score:.4f}", delta=bias_label)
+
                         st.divider()
+
                         tab1, tab2, tab3 = st.tabs(["🎯 Matching", "⚖️ Biais", "📝 Résumés"])
+
                         with tab1:
                             st.markdown(result.matching_report)
+
                         with tab2:
                             st.code(result.bias_report)
+
                         with tab3:
-                            st.markdown("**CV**")
+                            st.markdown("**📄 Contexte CV**")
                             st.markdown(result.cv_summary)
                             st.divider()
-                            st.markdown("**Offre**")
+                            st.markdown("**📋 Contexte Offre**")
                             st.markdown(result.job_summary)
+
                     else:
                         st.error(f"Erreur : {result.error}")
 
