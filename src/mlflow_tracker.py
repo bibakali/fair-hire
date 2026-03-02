@@ -50,6 +50,8 @@ def log_ingestion_run(
         n_chunks: Nombre de chunks générés
         n_pages: Nombre de pages du document
     """
+    if not MLFLOW_AVAILABLE:
+        return
     setup_mlflow()
 
     with mlflow.start_run(run_name=f"ingestion_{doc_type}_{datetime.now().strftime('%H%M%S')}"):
@@ -84,6 +86,8 @@ def log_retrieval_run(
         top_score: Meilleur score de similarité
         avg_score: Score moyen
     """
+    if not MLFLOW_AVAILABLE:
+        return
     setup_mlflow()
 
     with mlflow.start_run(run_name=f"retrieval_{datetime.now().strftime('%H%M%S')}"):
@@ -112,6 +116,8 @@ def log_bias_run(
         n_gendered_words: Nombre de mots genrés
         n_discriminatory_patterns: Nombre de patterns discriminatoires
     """
+    if not MLFLOW_AVAILABLE:
+        return
     setup_mlflow()
 
     with mlflow.start_run(run_name=f"bias_{datetime.now().strftime('%H%M%S')}"):
@@ -151,6 +157,8 @@ def log_pipeline_run(
         duration_seconds: Durée du pipeline
         chunk_size: Taille des chunks utilisée
     """
+    if not MLFLOW_AVAILABLE:
+        return
     setup_mlflow()
 
     with mlflow.start_run(run_name=f"pipeline_{datetime.now().strftime('%H%M%S')}"):
