@@ -14,7 +14,11 @@ from src.generator import generate, generate_matching_report
 from src.bias_detector import analyze, format_report
 
 import time
-from src.mlflow_tracker import log_pipeline_run, log_bias_run
+try:
+    from src.mlflow_tracker import log_pipeline_run, log_bias_run
+except ImportError:
+    def log_pipeline_run(*args, **kwargs): pass
+    def log_bias_run(*args, **kwargs): pass
 
 load_dotenv()
 
