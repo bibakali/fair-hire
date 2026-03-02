@@ -4,8 +4,14 @@ Tracking des expériences avec MLflow
 """
 
 import os
-import mlflow
-import mlflow.sklearn
+try:
+    import mlflow
+    import mlflow.sklearn
+    MLFLOW_AVAILABLE = True
+except ImportError:
+    MLFLOW_AVAILABLE = False
+    print("⚠️ MLflow non disponible — tracking désactivé")
+
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -15,7 +21,11 @@ MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
 EXPERIMENT_NAME = "fair-hire-rag"
 
 
+
+
 def setup_mlflow():
+    if not MLFLOW_AVAILABLE:
+        return
     """Configure MLflow en mode local (pas de serveur requis)."""
     mlflow.set_tracking_uri("sqlite:////Users/habiba/fair-hire/mlflow.db")
     mlflow.set_experiment(EXPERIMENT_NAME)
