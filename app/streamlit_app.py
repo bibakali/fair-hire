@@ -219,7 +219,7 @@ with st.sidebar:
     *Analyse approfondie en 30 secondes.*
                 
     **🤖 Optimiseur ATS**
-    Détecte les mots-clés manquants et réécrit ton CV pour passer les filtres automatiques.*
+    Détecte les mots-clés manquants et réécrit ton CV pour passer les filtres automatiques.
 
     """)
     st.divider()
