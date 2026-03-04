@@ -217,6 +217,10 @@ with st.sidebar:
     **📊 Pipeline complet**
     Matching + biais + résumés détaillés.
     *Analyse approfondie en 30 secondes.*
+                
+    **🤖 Optimiseur ATS**
+    Détecte les mots-clés manquants et réécrit ton CV pour passer les filtres automatiques.*
+
     """)
     st.divider()
     st.markdown("Built with LangChain · ChromaDB · Mistral")
