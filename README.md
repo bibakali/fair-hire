@@ -171,6 +171,8 @@ Couverture des tests :
 
 ---
 
+
+
 ## 💡 Choix techniques et compromis
 
 **Pourquoi Mistral 7B local plutôt qu'OpenAI ?**
@@ -196,6 +198,9 @@ Modèle léger (90Mo), rapide, et performant sur du texte professionnel en angla
 - Déploiement Hugging Face Spaces
 
 ---
+
+**🤖 Optimiseur ATS**
+    Détecte les mots-clés manquants et réécrit ton CV pour passer les filtres automatiques.
 
 ## 👩‍💻 Auteure
 

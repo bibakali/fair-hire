@@ -199,10 +199,10 @@ st.divider()
 with st.sidebar:
     st.header("⚙️ Configuration")
     mode = st.radio(
-        "Mode d'analyse",
-        ["🔍 Analyse de biais", "🎯 Matching CV/Offre", "📊 Pipeline complet"],
-        index=0
-    )
+    "Mode d'analyse",
+    ["🔍 Analyse de biais", "🎯 Matching CV/Offre", "📊 Pipeline complet", "🤖 Optimiseur ATS"],
+    index=0)
+
     st.divider()
     st.markdown("### 📖 Guide rapide")
     st.markdown("""
@@ -495,6 +495,135 @@ elif "Pipeline complet" in mode:
 
                     else:
                         st.error(f"Erreur : {result.error}")
+
+                except Exception as e:
+                    st.error(f"Erreur : {e}")
+                finally:
+                    cleanup(cv_path, job_path)
+
+# ---------------------------------------------------------------
+# Mode 4 : Optimiseur ATS
+# ---------------------------------------------------------------
+
+elif "Optimiseur ATS" in mode:
+    st.header("🤖 Optimiseur ATS")
+    st.info("Détecte les mots-clés manquants dans ton CV et réécrit tes expériences pour passer les filtres ATS.")
+
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        st.subheader("📄 CV du candidat")
+        cv_file = st.file_uploader("Upload le CV (PDF)", type=["pdf"], key="ats_cv")
+        if cv_file:
+            st.success(f"✅ {cv_file.name}")
+
+    with col2:
+        st.subheader("📋 Offre d'emploi")
+        ats_job_mode = st.radio(
+            "Mode d'entrée",
+            ["📎 Upload PDF", "📋 Coller le texte"],
+            horizontal=True,
+            key="ats_job_mode"
+        )
+        ats_job_file = None
+        ats_job_text = None
+
+        if ats_job_mode == "📎 Upload PDF":
+            ats_job_file = st.file_uploader(
+                "Upload l'offre (PDF)", type=["pdf"], key="ats_job"
+            )
+            if ats_job_file:
+                st.success(f"✅ {ats_job_file.name}")
+        else:
+            ats_job_text = st.text_area(
+                "Colle le texte de l'offre",
+                height=200,
+                placeholder="Texte copié depuis LinkedIn, Indeed...",
+                key="ats_job_text"
+            )
+
+    has_cv = cv_file is not None
+    has_job = (ats_job_file is not None) or (
+        ats_job_text is not None and len(ats_job_text.strip()) > 0
+    )
+
+    if has_cv and has_job:
+        if st.button("🚀 Analyser et optimiser", type="primary"):
+            with st.spinner("Analyse ATS en cours..."):
+                cv_path = None
+                job_path = None
+                try:
+                    from src.ats_optimizer import analyze_ats, rewrite_cv_for_ats
+
+                    cv_path = save_temp_file(cv_file)
+                    cv_chunks = load_and_split(cv_path)
+                    cv_text = " ".join(cv_chunks)
+
+                    if ats_job_file:
+                        job_path = save_temp_file(ats_job_file)
+                        job_chunks = load_and_split(job_path)
+                        job_text = " ".join(job_chunks)
+                    else:
+                        job_text = ats_job_text
+
+                    report = analyze_ats(cv_text, job_text)
+
+                    st.success("✅ Analyse terminée !")
+
+                    m1, m2, m3 = st.columns(3)
+                    m1.metric(
+                        "🎯 Score ATS",
+                        f"{int(report.ats_score * 100)}%",
+                        delta="Bon" if report.ats_score >= 0.7 else "À améliorer"
+                    )
+                    m2.metric("✅ Mots-clés présents", len(report.keywords_in_cv))
+                    m3.metric("❌ Mots-clés manquants", len(report.missing_keywords))
+
+                    st.divider()
+
+                    tab1, tab2, tab3 = st.tabs([
+                        "❌ Mots-clés manquants",
+                        "✅ Mots-clés présents",
+                        "✏️ CV réécrit"
+                    ])
+
+                    with tab1:
+                        st.markdown(f"### {report.summary}")
+                        if report.missing_keywords:
+                            cols = st.columns(3)
+                            for i, kw in enumerate(report.missing_keywords):
+                                cols[i % 3].markdown(
+                                    f'<span style="background:rgba(239,68,68,0.2);'
+                                    f'border:1px solid rgba(239,68,68,0.4);'
+                                    f'border-radius:20px;padding:4px 12px;'
+                                    f'color:#fca5a5;font-size:0.85rem;">'
+                                    f'❌ {kw}</span>',
+                                    unsafe_allow_html=True
+                                )
+                        else:
+                            st.success("Ton CV contient tous les mots-clés !")
+
+                    with tab2:
+                        if report.keywords_in_cv:
+                            cols = st.columns(3)
+                            for i, kw in enumerate(report.keywords_in_cv):
+                                cols[i % 3].markdown(
+                                    f'<span style="background:rgba(52,211,153,0.2);'
+                                    f'border:1px solid rgba(52,211,153,0.4);'
+                                    f'border-radius:20px;padding:4px 12px;'
+                                    f'color:#6ee7b7;font-size:0.85rem;">'
+                                    f'✅ {kw}</span>',
+                                    unsafe_allow_html=True
+                                )
+
+                    with tab3:
+                        with st.spinner("Réécriture du CV en cours..."):
+                            rewritten = rewrite_cv_for_ats(
+                                cv_text,
+                                report.missing_keywords,
+                                job_text
+                            )
+                            st.markdown(rewritten)
 
                 except Exception as e:
                     st.error(f"Erreur : {e}")
