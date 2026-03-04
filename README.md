@@ -8,51 +8,85 @@ sdk_version: 1.32.0
 app_file: app/streamlit_app.py
 pinned: false
 ---
-# ⚖️ Fair Hire — Assistant RH Inclusif basé sur l'IA
 
-> Détection de biais dans les offres d'emploi et matching intelligent CV/Poste  
-> Powered by RAG · LangChain · Mistral · ChromaDB · MLflow
+# ⚖️ Fair Hire — Assistant RH Inclusif
 
+> Détection de biais · Matching CV/Offre · Optimisation ATS · Propulsé par RAG + Mistral
+
+[![HuggingFace](https://img.shields.io/badge/🤗%20Live%20Demo-Hugging%20Face-yellow)](https://huggingface.co/spaces/bibakali/fair-hire)
+[![GitHub](https://img.shields.io/badge/GitHub-bibakali%2Ffair--hire-black?logo=github)](https://github.com/bibakali/fair-hire)
 ![Python](https://img.shields.io/badge/Python-3.12-blue)
-![LangChain](https://img.shields.io/badge/LangChain-latest-green)
-![MLflow](https://img.shields.io/badge/MLflow-3.10-orange)
+![Tests](https://img.shields.io/badge/Tests-27%20passing-brightgreen)
 ![Docker](https://img.shields.io/badge/Docker-ready-blue)
-![Tests](https://img.shields.io/badge/Tests-passing-brightgreen)
 
 ---
 
 ## 🎯 Problème résolu
 
-Les offres d'emploi contiennent souvent des biais inconscients :
-- **Langage genré** : "ninja", "rockstar", "ambitieux"
+En France, **les offres d'emploi contiennent fréquemment des biais inconscients** qui réduisent la diversité des candidatures et exposent les entreprises à des risques juridiques :
+
+- **Langage genré** : "ninja", "rockstar", "ambitieux", "combatif"
 - **Critères discriminants** : tranches d'âge, "Grande École obligatoire"
 - **Formulations excluantes** : "disponible immédiatement", "obligatoire"
 
-En France, ces biais réduisent la diversité des candidatures et exposent les entreprises à des risques juridiques (loi sur la non-discrimination à l'embauche).
+Et côté candidats, **70% des CVs sont filtrés par des logiciels ATS** avant même d'être lus par un humain — souvent à cause de mots-clés manquants.
 
-**Fair Hire** analyse automatiquement les offres d'emploi, détecte ces biais et génère des suggestions de reformulation inclusives. Il effectue également un matching intelligent entre un CV et une offre.
+**Fair Hire** adresse les deux problèmes en même temps.
 
 ---
 
-## 🏗️ Architecture
+## ✨ Fonctionnalités
+
+### 🔍 Analyse de biais
+Détecte automatiquement les formulations discriminantes dans une offre d'emploi.
+- Score de biais de 0 à 1
+- Mots genrés et patterns discriminatoires identifiés
+- Suggestions de reformulation inclusive
+- Résultat instantané
+
+### 🎯 Matching CV/Offre
+Rapport de matching rapide entre un CV et une offre d'emploi.
+- Score de correspondance sur 10
+- Points forts du candidat pour ce poste
+- Points à développer
+- Recommandation finale
+
+### 📊 Pipeline complet
+Analyse approfondie combinant matching + biais + résumés.
+- Toutes les analyses en une fois
+- Dashboard avec métriques clés
+- Résumés structurés du CV et de l'offre
+
+### 🤖 Optimiseur ATS
+La feature la plus différenciante — optimise le CV pour passer les filtres automatiques.
+- Extraction des mots-clés de l'offre
+- Identification des mots-clés manquants dans le CV
+- Réécriture intelligente des expériences par Mistral
+- Score ATS avant/après
+
+---
+
+## 🏗️ Architecture RAG + Agent
 ```
-PDF (CV / Offre)
-      ↓
-Ingestion (PyMuPDF)
-      ↓
-Chunking (LangChain RecursiveCharacterTextSplitter)
-      ↓
-Embeddings (sentence-transformers: all-MiniLM-L6-v2)
-      ↓
-Stockage vectoriel (ChromaDB)
-      ↓
-Retrieval sémantique
-      ↓
-Génération (Mistral 7B via Ollama)
-      ↓
-Rapport structuré (Biais + Matching)
-      ↓
-Tracking (MLflow)
+PDF (CV / Offre) ou Texte collé
+          ↓
+   Ingestion (PyMuPDF)
+          ↓
+   Chunking (LangChain)
+          ↓
+   Embeddings (sentence-transformers)
+          ↓
+   Stockage vectoriel (ChromaDB)
+          ↓
+   Retrieval sémantique
+          ↓
+   Agent LangChain — orchestre les outils
+          ↓
+   Génération (Mistral via API)
+          ↓
+   Rapport structuré
+          ↓
+   Tracking (MLflow)
 ```
 
 ---
@@ -61,7 +95,7 @@ Tracking (MLflow)
 
 | Couche | Technologie |
 |--------|------------|
-| LLM local | Mistral 7B via Ollama |
+| LLM | Mistral via API Mistral AI |
 | Orchestration RAG | LangChain |
 | Embeddings | sentence-transformers (all-MiniLM-L6-v2) |
 | Base vectorielle | ChromaDB |
@@ -70,89 +104,44 @@ Tracking (MLflow)
 | Tracking MLOps | MLflow |
 | Conteneurisation | Docker + docker-compose |
 | CI/CD | GitHub Actions + Jenkins |
-| Tests | pytest |
+| Tests | pytest (27 tests) |
+| Déploiement | Hugging Face Spaces |
 
 ---
 
-## 📁 Structure du projet
-```
-fair-hire/
-├── src/
-│   ├── ingestion.py        # Lecture et découpage des PDFs
-│   ├── embeddings.py       # Vectorisation et stockage ChromaDB
-│   ├── retriever.py        # Recherche sémantique
-│   ├── generator.py        # Génération via Mistral
-│   ├── bias_detector.py    # Détection de biais
-│   ├── agent.py            # Orchestration du pipeline
-│   └── mlflow_tracker.py   # Tracking des expériences
-├── app/
-│   └── streamlit_app.py    # Interface utilisateur
-├── tests/                  # Tests unitaires (pytest)
-├── Dockerfile
-├── docker-compose.yml
-├── Jenkinsfile
-└── .github/workflows/ci.yml
-```
-
----
-
-## 🚀 Installation et lancement
+## 🚀 Lancement local
 
 ### Prérequis
 - Python 3.12+
 - Docker
-- [Ollama](https://ollama.com) avec Mistral installé
+- Clé API [Mistral AI](https://console.mistral.ai)
 
-### 1. Clone le repo
+### Installation
 ```bash
 git clone https://github.com/bibakali/fair-hire.git
 cd fair-hire
-```
-
-### 2. Installe les dépendances
-```bash
 python3 -m venv env
-source env/bin/activate  # Windows: env\Scripts\activate
+source env/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. Configure les variables d'environnement
+### Configuration
 ```bash
 cp .env.example .env
+# Edite .env et ajoute ta clé MISTRAL_API_KEY
 ```
 
-### 4. Lance Ollama
+### Lancement
 ```bash
-ollama pull mistral
-ollama serve
-```
-
-### 5. Lance l'application
-```bash
-PYTHONPATH=/chemin/vers/fair-hire streamlit run app/streamlit_app.py
+./run.sh
 ```
 
 Ouvre **http://localhost:8501**
 
-### 6. Lance avec Docker
+### Avec Docker
 ```bash
 docker-compose up --build
 ```
-
----
-
-## 📊 MLflow — Tracking des expériences
-```bash
-mlflow ui --backend-store-uri sqlite:////chemin/vers/fair-hire/mlflow.db --port 5000
-```
-
-Ouvre **http://127.0.0.1:5000**
-
-Métriques trackées :
-- `bias_score` — score de biais de l'offre (0 = neutre)
-- `n_gendered_words` — nombre de mots genrés détectés
-- `n_discriminatory_patterns` — patterns discriminatoires
-- `duration_seconds` — durée du pipeline
 
 ---
 
@@ -161,48 +150,49 @@ Métriques trackées :
 pytest tests/ -v
 ```
 
-Couverture des tests :
-- `test_ingestion.py` — lecture et découpage PDFs
-- `test_embeddings.py` — vectorisation ChromaDB
-- `test_retriever.py` — recherche sémantique
-- `test_generator.py` — construction des prompts
-- `test_bias_detector.py` — détection de biais
-- `test_agent.py` — orchestration pipeline
+27 tests couvrant tous les modules :
+`ingestion` · `embeddings` · `retriever` · `generator` · `bias_detector` · `agent`
 
 ---
 
+## 📊 MLflow — Tracking des expériences
+```bash
+mlflow ui --backend-store-uri sqlite:////chemin/fair-hire/mlflow.db --port 5000
+```
 
+Métriques trackées : `bias_score` · `n_gendered_words` · `duration_seconds` · `ats_score`
 
-## 💡 Choix techniques et compromis
+---
 
-**Pourquoi Mistral 7B local plutôt qu'OpenAI ?**
-Confidentialité des données RH — les CVs et offres d'emploi ne quittent pas la machine.
+## 💡 Décisions techniques
+
+**Pourquoi Mistral plutôt qu'OpenAI ?**
+Mistral est une entreprise française — cohérent avec la problématique RH France. API moins chère et performances comparables sur du texte professionnel français.
 
 **Pourquoi ChromaDB plutôt que FAISS ?**
-ChromaDB offre une persistance native et une API plus simple pour un projet de cette taille. FAISS serait plus performant à grande échelle.
+Persistance native et API simple pour ce volume de données. FAISS serait plus performant à grande échelle.
 
 **Pourquoi chunk_size=512 ?**
-Après tests comparatifs, 512 offre le meilleur équilibre entre contexte suffisant et précision du retrieval sur des documents RH.
+Meilleur équilibre contexte/précision sur des documents RH après tests comparatifs loggués dans MLflow.
 
 **Pourquoi all-MiniLM-L6-v2 ?**
-Modèle léger (90Mo), rapide, et performant sur du texte professionnel en anglais et français.
+Léger (90Mo), rapide, et performant sur du texte professionnel français et anglais.
 
 ---
 
-## 🔮 Améliorations futures
+## 🔮 Roadmap
 
-- Évaluation de la qualité RAG avec **RAGAs**
-- Support multilingue amélioré
-- Fine-tuning du détecteur de biais sur corpus RH français
-- API REST avec FastAPI
-- Déploiement Hugging Face Spaces
+- [ ] Téléchargement du CV optimisé (PDF + DOCX)
+- [ ] Évaluation RAG avec RAGAs
+- [ ] Génération de lettre de motivation
+- [ ] Préparation aux questions d'entretien
+- [ ] Support multilingue
 
 ---
-
-**🤖 Optimiseur ATS**
-    Détecte les mots-clés manquants et réécrit ton CV pour passer les filtres automatiques.
 
 ## 👩‍💻 Auteure
 
-**Habibatou BA** — ML Engineer | MLOps & GenAI  
-[LinkedIn](https://linkedin.com/in/habibatou-ba) · [GitHub](https://github.com/bibakali)
+**Habibatou BA** — ML Engineer | MLOps & GenAI
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-habibatou--ba-blue?logo=linkedin)](https://linkedin.com/in/habibatou-ba)
+[![GitHub](https://img.shields.io/badge/GitHub-bibakali-black?logo=github)](https://github.com/bibakali)
