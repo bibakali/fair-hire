@@ -1,4 +1,3 @@
-<!--
 ---
 title: Fair Hire
 emoji: ⚖️
@@ -9,7 +8,8 @@ sdk_version: 1.32.0
 app_file: app/streamlit_app.py
 pinned: false
 ---
--->
+
+<div align="center">
 
 # ⚖️ Fair Hire — Assistant RH Inclusif
 
@@ -21,7 +21,7 @@ pinned: false
 ![Tests](https://img.shields.io/badge/Tests-27%20passing-brightgreen)
 ![Docker](https://img.shields.io/badge/Docker-ready-blue)
 
----
+</div>
 
 ## 🎯 Problème résolu
 
