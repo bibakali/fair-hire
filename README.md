@@ -1,3 +1,4 @@
+<!--
 ---
 title: Fair Hire
 emoji: ⚖️
@@ -8,6 +9,7 @@ sdk_version: 1.32.0
 app_file: app/streamlit_app.py
 pinned: false
 ---
+-->
 
 # ⚖️ Fair Hire — Assistant RH Inclusif
 
